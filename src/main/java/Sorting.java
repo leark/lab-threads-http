@@ -1,4 +1,9 @@
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.Collections;
 
 /**
  * A utility class containing methods for sorting arrays, written for CSCI 261.
@@ -115,20 +120,32 @@ public class Sorting
 	 * @param list The list to sort
 	 * @return The sorted list
 	 */
-	public static <T extends Comparable<T>> void mergeSort(T[] list)
-	{
-		if(list.length <= 1)
-		{
-			return;
+	public static class MergeSort implements Runnable
+	{	
+		public void run() {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSSS");
+			Integer[] nums;
+			System.out.println("Starting merge sort at "+dateFormat.format(new Date()));
+			nums = shuffled((int)Math.pow(10,7), 448); //a list of shuffled 10 million numbers
+			this.mergeHelper(nums);
+			
+			System.out.println("Merge sort finished at "+dateFormat.format(new Date())+" !");
 		}
-		else
-		{
-			int mid = list.length/2;
-			T[] left = Arrays.copyOfRange(list,0,mid);
-			T[] right = Arrays.copyOfRange(list,mid,list.length);
-			mergeSort(left);
-			mergeSort(right);
-			merge(left,right,list);
+
+		private <T extends Comparable<T>> void mergeHelper(T[] list) {
+			if(list.length <= 1)
+			{
+				return;
+			}
+			else
+			{
+				int mid = list.length/2;
+				T[] left = Arrays.copyOfRange(list,0,mid);
+				T[] right = Arrays.copyOfRange(list,mid,list.length);
+				mergeHelper(left);
+				mergeHelper(right);
+				merge(left,right,list);
+			}
 		}
 	}
 
@@ -239,9 +256,20 @@ public class Sorting
 	 * Uses quicksort to sort the provided list (in place)
 	 * @param list The list to sort
 	 */
-	public static void quickSort(Comparable[] list)
+	public static class QuickSort implements Runnable
 	{
-		quickSort(list,0,list.length-1);
+		public void run() {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSSS");
+			Integer[] nums;
+			nums = shuffled((int)Math.pow(10,7), 448); //a list of shuffled 10 million numbers
+			System.out.println("Starting quicksort at "+dateFormat.format(new Date()));
+			quickHelper(nums);
+			System.out.println("Quicksort finished at "+dateFormat.format(new Date())+" !");
+		}
+
+		private void quickHelper(Comparable[] list) {
+			quickSort(list,0,list.length-1);
+		}
 	}
 	
 	/**
@@ -303,5 +331,24 @@ public class Sorting
 		list[down] = tmp;
 		
 		return down; //return pivot's new position
+	}
+
+	/**
+	 * A utility method that returns a shuffled (randomly sorted) array of integers from 1 to the given number.
+	 * @param n The number of numbers to shuffle
+	 * @param seed A random seed, if less than 0 then unseeded
+	 * @return An array of shuffled integers
+	 */
+	public static Integer[] shuffled(int n, int seed)
+	{
+		ArrayList<Integer> nums = new ArrayList<Integer>();
+		for(int i=0; i<n; i++) {
+			nums.add(i+1);
+		}
+		if(seed >= 0)
+			Collections.shuffle(nums, new Random(seed));
+		else
+			Collections.shuffle(nums);
+		return nums.toArray(new Integer[0]);		
 	}
 }
